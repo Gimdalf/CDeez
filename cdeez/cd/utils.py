@@ -88,3 +88,14 @@ class Driver:
 			oldMajors = user['majors']
 		oldMajors.append(major)
 		return self.usersDB.update_one({'_id': id}, {'$set':{'majors':oldMajors}})
+	
+	def getAllCourses(self):
+		return self.coursesDB.find()
+
+	def getCoursesWithDiscipline(self, discipline, twoHundred = False):
+		if twoHundred:
+			courses = self.coursesDB.find({'_id':{"$regex": "[A-z]{3,4}2\d\d"}, 'discipline':discipline})
+		else:
+			courses = self.coursesDB.find('discipline: discipline')
+		return courses
+		
