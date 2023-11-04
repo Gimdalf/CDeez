@@ -10,14 +10,17 @@ class Driver:
 		self.mongoDB = self.client[server_settings['db_name']]
 		self.coursesDB = self.mongoDB.Courses
 		self.majorsDB = self.mongoDB.Majors
+		self.requirementsDB = self.mongoDB.Requirements
 
-	def addCourse(self, id, name, terms, prereqs, subject):
+	def addCourse(self, id, subid, name, terms, prereqs, subject, credits):
 		post = {
 			"_id":id,
+			"subid": subid,
 			"name": name,
 			"terms": terms,
 			"prereqs": prereqs,
-			"subject": subject
+			"subject": subject,
+			"credits": credits
 		}
 		return self.coursesDB.insert_one(post).inserted_id
 	
@@ -36,7 +39,14 @@ class Driver:
 			"credits": credits
 		}
 		return self.majorsDB.insert_one(post).inserted_id
-	
+
 	def getMajorByID(self, id):
 		major = self.majorsDB.find_one({"_id":id})
 		return major
+
+	def newRequirement(self, courses, minCompletion):
+		post = {
+			"courses": courses,
+			"minCompletion": minCompletion
+		}
+		return post
