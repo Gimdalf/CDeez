@@ -12,7 +12,8 @@ class Driver:
 		self.coursesDB = self.mongoDB.Courses
 		self.majorsDB = self.mongoDB.Majors
 		self.usersDB = self.mongoDB.Users
-		self.requirementsDB = self.mongoDB.Requirements
+		self.semesterDB = self.mongoDB.Semester
+
 
 	def addCourse(self, id, subid, name, terms, prereqs, subject, credits):
 		post = {
@@ -79,12 +80,9 @@ class Driver:
 		return self.usersDB.find_one({"_id":id})
 
 	def addMajorToUser(self, id, major):
-		pprint("Mjor to add:" + major)
 		user = self.usersDB.find_one({'_id': id})
 		oldMajors = []
-		print("OLD MAJORS: {}".format(user['majors']))
 		if user['majors'] != None:
-			print("UPDATING")
 			oldMajors = user['majors']
 		oldMajors.append(major)
 		return self.usersDB.update_one({'_id': id}, {'$set':{'majors':oldMajors}})
@@ -98,4 +96,15 @@ class Driver:
 		else:
 			courses = self.coursesDB.find('discipline: discipline')
 		return courses
-		
+	
+	def completeCourse(self, id, course):
+		user = self.usersDB.find_one({'_id': id})
+		oldCompleted = []
+		if user['completedCourses'] != None:
+			oldCompleted = user['completedCourses']
+		oldCompleted.append(course)
+		return self.usersDB.update_one({'_id': id}, {'$set':{'completedCourses':oldCompleted}})
+	
+	def uncompleteCourse(self, id, course):
+		user = self.usersDB.find_one({'_id': id})
+		return self.usersDB.update_one({'_id': id}, {'$pull':{'completedCourses':course}})
