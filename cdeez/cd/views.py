@@ -32,7 +32,50 @@ def viewCourse(request, course = None):
 	return HttpResponse("ID:{}\n {}\n {}".format(courseData["_id"], courseData["title"], courseData["term"]))
 
 def majorProgress(request):
-	
+	if request.user.is_authenticated:
+		username = request.user.get_username()
+		user_data = driver.getUserByID(request.user.id)
+		majors = []
+		majors_from_db = user_data['majors']
+		for major in majors_from_db:
+			major_obj = {}
+			major_data = driver.getMajorByID(major)
+			if major_data == None:
+				continue
+			else:
+				major_obj['name'] = major_data['name']
+				# Getting premajor requirements
+				major_obj['premajor'] = major_data['requirements']['premajor']
+				major_obj['core'] = major_data['requirements']['core']
+				electiveList = major_data['requirements']['electives']
+				major_obj['electives'] = []
+				for el in electiveList:
+					elective_obj = {'name': el['name'], 'courses': []}
+					noOfCourses = el['noCourses']
+					if el['courseList'] == None or el['courseList'] == []:
+						#If there are no specified disciplines
+						if el['fromDisciplines'] == None or el['fromDisciplines'] == []:
+							allCourses = driver.getAllCourses()
+							elective_obj['courses'] = [allCourses for i in noOfCourses]
+						#If disciplines are specified
+						else:
+							disciplineCourses = driver.getCoursesWithDiscipline(d)
+							twoHundredCourses = []
+							noTwoHundredCourses = el['aboveTwoHundred']
+							if noTwoHundredCourses > 0:
+								twoHundredCourses = [driver.getCoursesWithDiscipline(d, True) for d in el['fromDisciplines']]
+							elective_obj['courses'] = [disciplineCourses for i in range(noOfCourses - noTwoHundredCourses)] + [twoHundredCourses for i in range(noTwoHundredCourses)]
+					else:
+						elective_obj['courses'] = [el['courseList'] * noOfCourses]
+					major_obj['electives'].append(elective_obj)
+				majors.append(major_obj)
+
+		context = {
+			'username': username,
+			'majors': majors
+		}
+	else:
+		return HttpResponse("Not logged in: nothing to see here")
 
 def login_user(request):
 	template = loader.get_template('cd/login.html')
