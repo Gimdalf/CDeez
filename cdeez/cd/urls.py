@@ -6,7 +6,8 @@ urlpatterns = [
 	path('view_course/<slug:course>', views.viewCourse, name = 'view_course'),
 	path('login', views.login_user, name = 'login'),
 	path('create_user', views.create_user, name = 'create_user'),
-	path('logout', views.logout_user, name = 'logout')
+	path('logout', views.logout_user, name = 'logout'),
+	path('select_major', views.select_major, name = 'select_major')
 
 ]
 

@@ -21,3 +21,6 @@ class CreateUser(forms.Form):
 	email = forms.EmailField(label = 'Email', required = True)
 	password = forms.CharField(label = 'Password', widget = forms.PasswordInput(), required = True)
 	password_verify = forms.CharField(label = 'Password', widget = forms.PasswordInput(), required = True)
+
+class MajorForm(forms.Form):
+	major = forms.CharField(label = 'Major', required = True)

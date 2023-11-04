@@ -12,18 +12,27 @@ from .forms import *
 driver = Driver()
 
 def index(request):
+	template = loader.get_template('cd/index.html')
 	username = None
+	major = None
 	if request.user.is_authenticated:
 		username = request.user.get_username()
+		user_data = driver.getUserByID(request.user.id)
+		majors = user_data['majors']
 		print(request.user.id)
 	context = {
-		'username': username
+		'username': username,
+		'majors': majors
 	}
-	return HttpResponse("Hello User: {}".format(username))
+
+	return HttpResponse(template.render(context, request))
 
 def viewCourse(request, course = None):
 	courseData = driver.getCourse(course)
 	return HttpResponse("ID:{}\n {}\n {}".format(courseData["_id"], courseData["title"], courseData["term"]))
+
+def majorProgress(request):
+	
 
 def login_user(request):
 	template = loader.get_template('cd/login.html')
@@ -42,6 +51,27 @@ def login_user(request):
 				pass
 	return HttpResponse(template.render(context, request))
 
+def select_major(request):
+	template = loader.get_template('cd/select_major.html')
+	context = {
+		'majorForm': MajorForm()
+	}
+	if request.method == 'POST':
+		if request.user.is_authenticated:
+			id = request.user.id
+			form = MajorForm(request.POST)
+			if form.is_valid:
+				majors = driver.getAllMajors()
+				major_input = form['major'].data
+				for i in majors:
+					if major_input.lower() == i['_id'].lower():
+						driver.addMajorToUser(id, major_input.upper())
+						return redirect('cd:index')
+		else:
+			pass
+	return HttpResponse(template.render(context, request))
+
+
 def create_user(request):
 	template = loader.get_template('cd/create_user.html')
 	context = {
@@ -54,6 +84,7 @@ def create_user(request):
 			cdata = form.cleaned_data
 			if cdata['password'] == cdata['password_verify']:
 				user = User.objects.create_user(cdata['username'], cdata['email'], cdata['password'])
+				driver.addUser(user.id, user.username)
 				login(request, user)
 				return redirect('cd:index')
 			else:
