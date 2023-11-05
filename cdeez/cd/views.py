@@ -16,7 +16,9 @@ def index(request):
 		template = loader.get_template('cd/index.html')
 		username = request.user.get_username()
 		user_data = driver.getUserByID(request.user.id)
-		user_completed = set(i for i in user_data['completedCourses'])
+		user_completed = []
+		if user_data['completedCourses'] != None:
+			user_completed = set(i for i in user_data['completedCourses'])
 		majors = []
 		if not 'majors' in user_data:
 			return redirect("cd:select_major")
