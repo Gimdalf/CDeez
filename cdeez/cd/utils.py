@@ -1,6 +1,45 @@
+import math
 from pymongo import MongoClient
 import configparser
 from pprint import pprint
+
+
+# requirements must have: "noOfRequired":int, "courses":
+def checkRequirement(completedCourses, requirement):
+	noRequired = requirement['noOfRequired']
+	completed = []
+	for i in requirement['courses']:
+		pprint(requirement['courses'])
+		if i in completedCourses:
+			completed.append(i)
+		if len(completed) >= noRequired:
+			return completed
+	return []
+
+def updateRequirementsCompletion(completedCourses, requirements):
+	for i, data in zip(range(len(requirements)), requirements):
+		completingCourses = checkRequirement(completedCourses, data)
+		requirements[i]['completed'] = completingCourses
+
+# currenty just getting progress for first major
+# requirements refers to a collection of requirements. Returns tuple (no. of completed courses, no. of total courses)
+def requirementProgress(completedCourses, requirements):
+	totalCourses = 0
+	totalComplete = 0
+	for r in requirements:
+		completed = len(checkRequirement(completedCourses, r))
+		totalCourses += r['noOfRequired']
+		totalComplete += completed
+	return (totalComplete, totalCourses)
+
+def decimalToPercentage(x):
+	return math.ceil(x*100)
+
+def percentifyValues(x):
+	if x[1] != 0:
+		return math.ceil((x[0]/x[1])*100)
+	else:
+		return 100
 
 class Driver:
 	def __init__(self):
@@ -13,6 +52,8 @@ class Driver:
 		self.majorsDB = self.mongoDB.Majors
 		self.usersDB = self.mongoDB.Users
 		self.requirementsDB = self.mongoDB.Requirements
+		self.semesterDB = self.mongoDB.Semester
+
 
 	def addCourse(self, id, subid, name, terms, prereqs, subject, credits):
 		post = {
@@ -30,6 +71,9 @@ class Driver:
 		course = self.coursesDB.find_one({"_id":id})
 		return course
 	
+	def getAllULWCourses(self):
+		return self.courseDB.find("")
+
 	def addMajor(self, id, name, discipline, premajor, core, electives, credits):
 		post = {
 			"_id": id,
@@ -69,6 +113,7 @@ class Driver:
 		post = {
 			"_id": id,
 			"name": username,
+			"completedCourses": [],
 			"majors": [],
 			"minors": [],
 			"clusters": []
@@ -79,12 +124,66 @@ class Driver:
 		return self.usersDB.find_one({"_id":id})
 
 	def addMajorToUser(self, id, major):
-		pprint("Mjor to add:" + major)
 		user = self.usersDB.find_one({'_id': id})
 		oldMajors = []
-		print("OLD MAJORS: {}".format(user['majors']))
 		if user['majors'] != None:
-			print("UPDATING")
 			oldMajors = user['majors']
 		oldMajors.append(major)
 		return self.usersDB.update_one({'_id': id}, {'$set':{'majors':oldMajors}})
+	
+	def getAllCourses(self):
+		return self.coursesDB.find()
+
+	def getCoursesWithDiscipline(self, discipline, twoHundred = False):
+		if twoHundred:
+			courses = self.coursesDB.find({'_id':{"$regex": "[A-z]{3,4} 2\d\d"}, 'discipline':discipline})
+		else:
+			courses = self.coursesDB.find({'discipline': discipline})
+		return courses
+	
+	def completeCourse(self, id, course):
+		user = self.usersDB.find_one({'_id': id})
+		oldCompleted = []
+		if user['completedCourses'] != None:
+			oldCompleted = user['completedCourses']
+		oldCompleted.append(course)
+		return self.usersDB.update_one({'_id': id}, {'$set':{'completedCourses':oldCompleted}})
+	
+	def uncompleteCourse(self, id, course):
+		user = self.usersDB.find_one({'_id': id})
+		return self.usersDB.update_one({'_id': id}, {'$pull':{'completedCourses':course}})
+	
+	
+	def electiveToRequirements(self, el):
+		newReqCollection = []
+		elective_obj = {'name': el['electiveName'], 'courses': [], 'noOfRequired': el['noCourses']}
+		noOfCourses = el['noCourses']
+
+		if el['courseList'] == None or el['courseList'] == []:
+			#If there are no specified disciplines
+			if el['fromDisciplines'] == None or el['fromDisciplines'] == []:
+				allCourses = self.getAllCourses()
+				elective_obj['courses'] = [list(j for j in allCourses) for i in noOfCourses]
+			#If disciplines are specified
+			else:
+				disciplineCourses = []
+				twoHundredCourses = []
+				noTwoHundredCourses = el['aboveTwoHundred']
+				for d in el['fromDisciplines']:
+					disciplineCourses.append(i for i in self.getCoursesWithDiscipline(d))
+					if noTwoHundredCourses > 0:
+						twoHundredCourses += [i for i in self.getCoursesWithDiscipline(d, True) for d in el['fromDisciplines']]
+				if noTwoHundredCourses > 0:
+					otherElectiveObj = elective_obj.copy()
+					otherElectiveObj['courses'] = twoHundredCourses
+					otherElectiveObj['noOfRequired'] = noTwoHundredCourses
+					newReqCollection.append(otherElectiveObj)
+
+				elective_obj['courses'] = disciplineCourses
+				elective_obj['noOfRequired'] = noOfCourses - noTwoHundredCourses
+
+		else:
+			elective_obj['courses'] = [el['courseList'] * noOfCourses]
+		newReqCollection.append(elective_obj)
+
+		return newReqCollection
