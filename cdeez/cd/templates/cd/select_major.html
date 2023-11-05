@@ -7,15 +7,11 @@
 <div style="display:flex;align-items:center;justify-content:center">
 
 <form method="POST", id = "mForm">
-	<select type = 'text' id='major'> 
-		{% for major in majors %} 
-		<option value = '{{major.name}}'>{{ major.name }}</option>
-		{% endfor %}
-	</select>
-	<input type = "submit" value = "Submit">
-	{% csrf_token %}
+
+	<fieldset id = "mFormFields">
+		<!-- <select aria-label="label" type = "text" id = "major">{% for major in majors %}<option value = '{{major.name}}'>{{ major.name }}</option>{% endfor %}</select> -->
+		{{ majorForm.major }}
+		<input type = "submit" value = "Submit">
+		{% csrf_token %}
+	</fieldset>
 </form>
-
-</div>
-
-{% endblock %}
