@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import user_passes_test
+from django.views.decorators.csrf import csrf_exempt
 
 from .utils import *
 from .forms import *
@@ -63,7 +64,6 @@ def index(request):
 		ulwNoReq = 1 + len(majors)
 		ulwFound = []
 		for course in user_completed:
-			pprint(course)
 			if course[-1] == "W":
 				ulwFound.append(course)
 			if len(ulwFound) == ulwNoReq:
@@ -99,48 +99,6 @@ def semester(request):
 	}
 	return HttpResponse(template.render(context, request))
 
-def major_progress(request):
-	if request.user.is_authenticated:
-		template = loader.get_template('cd/major.html')
-		username = request.user.get_username()
-		user_data = driver.getUserByID(request.user.id)
-		user_completed = set(i for i in user_data['completedCourses'])
-
-		majors = []
-		majors_from_db = user_data['majors']
-		for major in majors_from_db:
-			major_obj = {}
-			major_data = driver.getMajorByID(major)
-			if major_data == None:
-				continue
-			else:
-				major_obj['name'] = major_data['name']
-				# Getting premajor requirements
-				major_obj['premajor'] = major_data['requirements']['premajor']
-				major_obj['core'] = major_data['requirements']['core']
-				updateRequirementsCompletion(user_completed, major_obj['premajor'])
-				updateRequirementsCompletion(user_completed, major_obj['core'])
-				electiveList = major_data['requirements']['electives']
-				major_obj['electives'] = []
-				for el in electiveList:
-					eReq = driver.electiveToRequirements(el)
-					major_obj['electives'] += eReq
-				updateRequirementsCompletion(user_completed, major_obj['electives'])
-				majors.append(major_obj)
-
-				premajorCourses = []
-				for i in major_obj['premajor']:
-					if i['courses'] != None:
-						premajorCourses += i['courses']
-				major_obj['form'] = CompletionForm(premajorCourses)
-		context = {
-			'username': username,
-			'majors': majors
-		}
-		return HttpResponse(template.render(context, request))
-	else:
-		return redirect("cd:login")
-
 def login_user(request):
 	template = loader.get_template('cd/login.html')
 	context = {
@@ -165,20 +123,16 @@ def select_major(request):
 		'majors': allMajors,
 		'majorForm': MajorForm([(x['_id'], x['name']) for x in allMajors])
 	}
-	pprint(context['majorForm'])
 	if request.method == 'POST':
 		if request.user.is_authenticated:
 			form = MajorForm(choices = [(x['_id'], x['name']) for x in allMajors], data = request.POST)
 			if form.is_valid():
 				id = request.user.id
-				pprint(form)
 				major_input = form.data['major']
 				for i in allMajors:
 					if major_input.lower() == i['_id'].lower():
 						driver.addMajorToUser(id, major_input.upper())
 						return redirect('cd:major_progress')
-			else:
-				pprint(form.errors)
 		else:
 			pass
 	return HttpResponse(template.render(context, request))
@@ -208,10 +162,10 @@ def logout_user(request):
 	logout(request)
 	return redirect('cd:index')
 
-
-
-#Lucy
 def major(request):
+	if request.method == 'POST':
+		for key, value in request.POST.items():
+			driver.completeCourse(request.user.id, key)
 	if request.user.is_authenticated:
 		template = loader.get_template('cd/major.html')
 		username = request.user.get_username()
@@ -243,7 +197,7 @@ def major(request):
 				electiveList = major_data['requirements']['electives']
 				major_obj['electives'] = []
 				for el in electiveList:
-					eReq = driver.electiveToRequirements(el)
+					eReq = list(driver.electiveToRequirements(el))
 					major_obj['electives'] += eReq
 				updateRequirementsCompletion(user_completed, major_obj['electives'])
 				for i in range(len(major_obj['electives'])):

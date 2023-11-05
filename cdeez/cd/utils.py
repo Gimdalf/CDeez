@@ -9,7 +9,6 @@ def checkRequirement(completedCourses, requirement):
 	noRequired = requirement['noOfRequired']
 	completed = []
 	for i in requirement['courses']:
-		pprint(requirement['courses'])
 		if i in completedCourses:
 			completed.append(i)
 		if len(completed) >= noRequired:
