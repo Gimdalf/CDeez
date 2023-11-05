@@ -31,3 +31,9 @@ class MajorForm(forms.Form):
 	def __init__(self, choices, *args, **kwargs):
 		super(MajorForm, self).__init__(*args, **kwargs)
 		self.fields['major'] = forms.ChoiceField(choices=choices, widget=forms.Select(attrs={'class': 'form-control'}), required=True)
+
+class CompletionForm(forms.Form):
+	def __init__(self, courses, *args, **kwargs):
+		super(MajorForm, self).__init__(*args, **kwargs)
+		for i in courses:
+			self.fields[i['_id']] = forms.BooleanField()

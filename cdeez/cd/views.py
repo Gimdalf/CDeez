@@ -128,6 +128,11 @@ def major_progress(request):
 				updateRequirementsCompletion(user_completed, major_obj['electives'])
 				majors.append(major_obj)
 
+				premajorCourses = []
+				for i in major_obj['premajor']:
+					if i['courses'] != None:
+						premajorCourses += i['courses']
+				major_obj['form'] = CompletionForm(premajorCourses)
 		context = {
 			'username': username,
 			'majors': majors
