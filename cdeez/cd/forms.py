@@ -1,6 +1,7 @@
 from django import forms
 from .utils import Driver
 
+
 # class CharField(forms.CharField):
 # 	def __init__(self, widget = forms.TextInput(), required = False, **kwargs):
 # 		kwargs['widget'] = widget

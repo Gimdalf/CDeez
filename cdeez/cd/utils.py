@@ -15,6 +15,14 @@ def checkRequirement(completedCourses, requirement):
 			return completed
 	return completed
 
+def checkFulfilled(completedCourses, requirement):
+	noRequired = requirement['noOfRequired']
+	completed = []
+	for i in requirement['courses']:
+		if i in completedCourses:
+			completed.append(i)
+	return completed
+
 def updateRequirementsCompletion(completedCourses, requirements):
 	for i, data in zip(range(len(requirements)), requirements):
 		completingCourses = checkRequirement(completedCourses, data)
@@ -78,9 +86,9 @@ class Driver:
 
 	def getCoursesWithDiscipline(self, discipline, twoHundred = False):
 		if twoHundred:
-			courses = self.coursesDB.find({'_id':{"$regex": "[A-z]{3,4} 2\d\d"}, 'discipline':discipline})
+			courses = list(x['_id'] for x in self.coursesDB.find({'_id':{"$regex": "[A-z]{3,4} 2\d\d"}, 'subject':discipline}))
 		else:
-			courses = self.coursesDB.find({'discipline': discipline})
+			courses = list(x['_id'] for x in self.coursesDB.find({'subject': discipline}))
 		return courses
 	
 	def getAllULWCourses(self):
@@ -145,12 +153,17 @@ class Driver:
 	
 	def completeCourse(self, id, course):
 		user = self.usersDB.find_one({'_id': id})
+		course_check = self.coursesDB.find_one({'_id': course})
+		if course_check == None:
+			return
 		oldCompleted = []
 		if user['completedCourses'] != None:
 			oldCompleted = user['completedCourses']
+		if (course in oldCompleted):
+			return
 		oldCompleted.append(course)
 		return self.usersDB.update_one({'_id': id}, {'$set':{'completedCourses':oldCompleted}})
-	
+
 	def uncompleteCourse(self, id, course):
 		user = self.usersDB.find_one({'_id': id})
 		return self.usersDB.update_one({'_id': id}, {'$pull':{'completedCourses':course}})
@@ -171,9 +184,9 @@ class Driver:
 				twoHundredCourses = []
 				noTwoHundredCourses = el['aboveTwoHundred']
 				for d in el['fromDisciplines']:
-					disciplineCourses.append(i for i in self.getCoursesWithDiscipline(d))
+					disciplineCourses= list(i for i in self.getCoursesWithDiscipline(d))*2
 					if noTwoHundredCourses > 0:
-						twoHundredCourses += [i for i in self.getCoursesWithDiscipline(d, True) for d in el['fromDisciplines']]
+						twoHundredCourses += list(i for i in self.getCoursesWithDiscipline(d, True) for d in el['fromDisciplines'])
 				if noTwoHundredCourses > 0:
 					otherElectiveObj = elective_obj.copy()
 					otherElectiveObj['courses'] = twoHundredCourses

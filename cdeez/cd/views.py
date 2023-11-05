@@ -132,7 +132,7 @@ def select_major(request):
 				for i in allMajors:
 					if major_input.lower() == i['_id'].lower():
 						driver.addMajorToUser(id, major_input.upper())
-						return redirect('cd:major_progress')
+						return redirect('cd:major')
 		else:
 			pass
 	return HttpResponse(template.render(context, request))
@@ -163,14 +163,29 @@ def logout_user(request):
 	return redirect('cd:index')
 
 def major(request):
-	if request.method == 'POST':
-		for key, value in request.POST.items():
-			driver.completeCourse(request.user.id, key)
 	if request.user.is_authenticated:
-		template = loader.get_template('cd/major.html')
 		username = request.user.get_username()
 		user_data = driver.getUserByID(request.user.id)
 		user_completed = set(i for i in user_data['completedCourses'])
+		
+		# Deletes anything which is not within form, which is a problem esp. for double majors
+		if request.method == 'POST':
+			hasUpdate = False
+			newCompletedCourses = []
+			for key, value in request.POST.items():
+				newCompletedCourses.append(key)
+			for i in user_completed:
+				if not i in newCompletedCourses:
+					driver.uncompleteCourse(request.user.id, i)
+					hasUpdate = True
+			for i in newCompletedCourses:
+				if driver.completeCourse(request.user.id, i) != None:
+					hasUpdate = True
+			if hasUpdate:
+				user_data = driver.getUserByID(request.user.id)
+				user_completed = set(i for i in user_data['completedCourses'])
+
+		template = loader.get_template('cd/major.html')
 
 		majors = []
 		majors_from_db = user_data['majors']
@@ -187,13 +202,14 @@ def major(request):
 				updateRequirementsCompletion(user_completed, major_obj['premajor'])
 				for i in range(len(major_obj['premajor'])):
 					pos = major_obj['premajor'][i]
-					completedCoursesInSection = checkRequirement(user_completed, major_obj['premajor'][i])
+					completedCoursesInSection = checkFulfilled(user_completed, major_obj['premajor'][i])
 					major_obj['premajor'][i]['form'] = CompletionForm(major_obj['premajor'][i]['courses'], initial = {x: True for x in completedCoursesInSection})
 				updateRequirementsCompletion(user_completed, major_obj['core'])
 				for i in range(len(major_obj['core'])):
 					pos = major_obj['core'][i]
-					completedCoursesInSection = checkRequirement(user_completed, major_obj['core'][i])
+					completedCoursesInSection = checkFulfilled(user_completed, major_obj['core'][i])
 					major_obj['core'][i]['form'] = CompletionForm(major_obj['core'][i]['courses'], initial = {x: True for x in completedCoursesInSection})
+				
 				electiveList = major_data['requirements']['electives']
 				major_obj['electives'] = []
 				for el in electiveList:
@@ -202,7 +218,8 @@ def major(request):
 				updateRequirementsCompletion(user_completed, major_obj['electives'])
 				for i in range(len(major_obj['electives'])):
 					pos = major_obj['electives'][i]
-					completedCoursesInSection = checkRequirement(user_completed, major_obj['electives'][i])
+					pprint(major_obj['electives'][i]['courses'])
+					completedCoursesInSection = checkFulfilled(user_completed, major_obj['electives'][i])
 					major_obj['electives'][i]['form'] = CompletionForm(major_obj['electives'][i]['courses'], initial = {x: True for x in completedCoursesInSection})
 				majors.append(major_obj)
 
@@ -214,24 +231,5 @@ def major(request):
 	else:
 		return redirect("cd:login")
 
-
-	
-	context = {
-		'majors':[
-			{'name':'Computer Science',
-			'premajor':[
-				{'name':'Math',
-				'completed':['MATH150'],
-				'noOfRequired':2,
-				'courses':['MATH150', 'MATH161']}, 
-				{'name':'CS','completed':['CSC171'],
-	 			'noOfRequired':3,
-				'courses':['CSC171','CSC172','CSC173']}
-			]
-			},
-			{'name':'Data Science'}
-		]
-	}
-	template = loader.get_template('cd/major.html')
-	return HttpResponse(template.render(context, request))
-
+def cluster(request):
+	pass

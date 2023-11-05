@@ -10,9 +10,9 @@ urlpatterns = [
 	path('create_user', views.create_user, name = 'create_user'),
 	path('logout', views.logout_user, name = 'logout'),
 	path('select_major', views.select_major, name = 'select_major'),
-  	path('major_progress', views.major_progress, name = 'major_progress'),
 	path('semester', views.semester, name = 'semester'),
 	path('major', views.major, name = 'major'),
+	path('cluster', views.cluster, name = 'cluster')
 ]
 
 app_name = 'cd'
