@@ -4,35 +4,41 @@
 {% block content %}
 
 
-{% block title %}<h1>Majors</h1>{% endblock %}
+{% block title %}<h1>My Majors</h1>{% endblock %}
 
+
+
+
+
+
+{% comment %} <h3>{{major.name}}</h3> FIXME: have to loop through list to get this.... {% endcomment %}  
 
 {% for major in majors %}
-                
-{% for item in major.premajor %}
-    {{item.name}}
-    {% for course in item.courses%}
-        {{course}}
-    {% endfor %}
-{% endfor %}
-
-{% endfor %}
-
-
+    <div class="card mb-4 py-3 border-bottom-info">
+        <div class="card-body">
+            <h4> {{major.name}}</h4>
+        </div>
+    </div>
 
 <div class="card shadow mb-4">
     <div class="card-header py-3">
         
-        <h6 class="m-0 font-weight-bold text-primary">Premajor courses:
+        <h5 class="m-0 font-weight-bold text-primary">Premajor courses</h5>
+        
+        </form>
             
-        </h6>
+    </div>
+    <div class="card-body">
+
 
         <form method="post">
 
             {% for major in majors %}
                 
                 {% for item in major.premajor %}
-                    {{item.name}}
+                <div class="my-3"></div>
+                    <h5> {{item.name}}</h5>
+
                     {% for completed in item.completed%}
                         
                         <div class="form-check">
@@ -43,50 +49,40 @@
                         </div> 
             
                     {% endfor %}
+
+                    {% for course in item.courses%}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                            <label class="form-check-label" for="flexCheckChecked">
+                                <p class="text-sm mb-0 checkbox-label" >{{course}}</p>
+                            </label>
+                        </div> 
+
+                    {% endfor %}
+
                 {% endfor %}
 
-            {% endfor %}
-
-            <script>
-
-                var majors = {{majors}}
-
-                for(let i=0; i<majors.length; i++){
-                    var newdiv = document.createElement('div');
-                    newdiv.class = "form-check"
-                    newdiv.innerHTML = 
-                    majors[i]['name'];
-                }
-
-            </script>
-            {% for course in item.courses %}
-            {% for completed in item.completed%}
-                
-                {% if course == completed %}
-                    
-                {% endif %}
-            {% endfor %}
-        {% endfor %}
+            {% endfor %}        
 
 
 
-            {% for item in majors.premajor.completed %}
+
+
+
+
+        <!--TESTING FORM FUNCTION...-->
+
+        <form method="post">
+            {% csrf_token %}
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                <label class="form-check-label" for="flexCheckDefault">
-                    <p class="text-lg mb-0 checkbox-label" >Hello</p>
+                <input class="form-check-input" type="checkbox" value="test" id="flexCheckChecked">
+                <label class="form-check-label" for="flexCheckChecked">
+                    <p class="text-lg mb-0 checkbox-label" >Check</p>
                 </label>
-            </div>
-        
-            {% endfor %}
-        
-            
-
-
+            </div> 
+                    
         </form>
-            
-    </div>
-    <div class="card-body">
+        
 
         <!-- CHECKED CHECKBOX: for completed -->
 
@@ -106,21 +102,6 @@
         </label>
         </div>
 
-          
-        <div class="container">
-            <div class="round">
-              <input type="checkbox" checked id="checkbox" />
-              <label for="checkbox"> <div> <p class="text-lg mb-0 checkbox-label" >Course here</p> </div> </label>
-            </div>
-        </div>
-        
-
-        <div class="container">
-            <div class="round">
-              <input type="checkbox" checked id="checkbox" />
-              <label for="checkbox"></label>
-            </div>
-        </div>
 
     </div>
 
@@ -137,6 +118,8 @@
     </div>
 </div>
 
+
+
 <div class="card shadow mb-4">
     <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Electives</h6>
@@ -147,6 +130,46 @@
         easily modified with no need for any custom CSS!
     </div>
 </div>
+
+{% endfor %}
+
+
+
+<script>
+    var count = 0;
+    var limit = {{noOfRequired}}
+    
+    function addInput(){
+        
+    }
+
+</script>
+
+
+
+
+
+<!-- button that says "Add Major" - then redirects user to "Select Major" page-->
+
+<div class="my-4"></div>
+
+
+<a href="/select_major" class="btn btn-danger btn-icon-split">
+    <span class="icon text-white-50">
+        <i class="fas fa-plus "></i>
+
+    </span>
+    <span class="text">ADD A MAJOR</span>
+</a>
+
+
+<div class="my-4"></div>
+
+
+
+
+
+
 
 
 <p class="text-lg mb-0"></p>

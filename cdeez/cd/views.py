@@ -16,7 +16,9 @@ def index(request):
 		template = loader.get_template('cd/index.html')
 		username = request.user.get_username()
 		user_data = driver.getUserByID(request.user.id)
-		user_completed = set(i for i in user_data['completedCourses'])
+		user_completed = []
+		if user_data != None:
+			user_completed = set(i for i in user_data['completedCourses'])
 		majors = []
 		if not 'majors' in user_data:
 			return redirect("cd:select_major")
@@ -90,7 +92,7 @@ def view_course(request, course = None):
 
 def major_progress(request):
 	if request.user.is_authenticated:
-		template = loader.get_template('cd/major.html')
+		template = loader.get_template('cd/major_progress.html')
 		username = request.user.get_username()
 		user_data = driver.getUserByID(request.user.id)
 		user_completed = set(i for i in user_data['completedCourses'])
@@ -121,6 +123,13 @@ def major_progress(request):
 			'username': username,
 			'majors': majors
 		}
+
+		if request.method == "POST":
+			print(request.POST)
+			 #FIXME:
+
+
+
 		return HttpResponse(template.render(context, request))
 	else:
 		return redirect("cd:login")
@@ -137,7 +146,7 @@ def login_user(request):
 			user = authenticate(username = form['username'].data, password = form['password'].data)
 			if user is not None:
 				login(request, user)
-				return redirect('/home') # FIXME:
+				return redirect('/index') # FIXME:
 			else:
 				pass
 	return HttpResponse(template.render(context, request))
@@ -153,10 +162,11 @@ def select_major(request):
 			id = request.user.id
 			majors = driver.getAllMajors()
 			major_input = request.POST.get('major')
-			for i in majors:
-				if major_input.lower() == i['_id'].lower():
-					driver.addMajorToUser(id, major_input.upper())
-					return redirect('cd:index')
+			if major_input != None:
+				for i in majors:
+					if major_input.lower() == i['_id'].lower():
+						driver.addMajorToUser(id, major_input.upper())
+						return redirect('cd:major_progress')
 		else:
 			pass
 	return HttpResponse(template.render(context, request))
@@ -187,25 +197,25 @@ def logout_user(request):
 	return redirect('cd:index')
 
 
-def major(request):
-	context = {
-		'majors':[
-			{'name':'Computer Science',
-			'premajor':[
-				{'name':'Math',
-				'completed':['MATH150'],
-				'noOfRequired':2,
-				'courses':['MATH150', 'MATH161']}, 
-				{'name':'CS','completed':['CSC171'],
-	 			'noOfRequired':3,
-				'courses':['CSC171','CSC172','CSC173']}
-			]
-			},
-			{'name':'Data Science'}
-		]
-	}
-	template = loader.get_template('cd/major.html')
-	return HttpResponse(template.render(context, request))
+# def major(request):
+# 	context = {
+# 		'majors':[
+# 			{'name':'Computer Science',
+# 			'premajor':[
+# 				{'name':'Math',
+# 				'completed':['MATH150'],
+# 				'noOfRequired':2,
+# 				'courses':['MATH150', 'MATH161']}, 
+# 				{'name':'CS','completed':['CSC171'],
+# 	 			'noOfRequired':3,
+# 				'courses':['CSC171','CSC172','CSC173']}
+# 			]
+# 			},
+# 			{'name':'Data Science'}
+# 		]
+# 	}
+# 	template = loader.get_template('cd/major.html')
+# 	return HttpResponse(template.render(context, request))
 
 
 

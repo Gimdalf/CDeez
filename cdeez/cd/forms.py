@@ -24,3 +24,7 @@ class CreateUser(forms.Form):
 
 class MajorForm(forms.Form):
 	major = forms.CharField(label = 'Major', required = True)
+
+
+class CheckboxForm(forms.Form):
+	completed = forms.BooleanField(initial = True)

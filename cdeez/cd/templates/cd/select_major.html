@@ -1,5 +1,21 @@
+{% extends 'cd/base.html' %}
+
+{% block content %}
+
+{% block title %}<h3 style="text-align:center">Select Major</h3>{% endblock %}
+
+<div style="display:flex;align-items:center;justify-content:center">
+
 <form method="POST", id = "mForm">
-	<select type = 'text' id='major'>{% for major in majors %}<option value = '{{major.name}}'>{{ major.name }}</option>{% endfor %}</select>
+	<select type = 'text' id='major'> 
+		{% for major in majors %} 
+		<option value = '{{major.name}}'>{{ major.name }}</option>
+		{% endfor %}
+	</select>
 	<input type = "submit" value = "Submit">
 	{% csrf_token %}
 </form>
+
+</div>
+
+{% endblock %}
