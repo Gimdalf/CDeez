@@ -1,0 +1,5 @@
+<form method="POST", id = "mForm">
+	<select type = 'text' id='major'>{% for major in majors %}<option value = '{{major.name}}'>{{ major.name }}</option>{% endfor %}</select>
+	<input type = "submit" value = "Submit">
+	{% csrf_token %}
+</form>

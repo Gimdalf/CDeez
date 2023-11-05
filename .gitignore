@@ -16,8 +16,6 @@ CDeez/cdeez/__pycache__/urls.cpython-310.pyc
 CDeez/cdeez/__pycache__/utils.cpython-310.pyc
 CDeez/cdeez/__pycache__/views.cpython-310.pyc
 CDeez/cdeez/__pycache__/wsgi.cpython-310.pyc
-<<<<<<< Updated upstream
-=======
 CDeez/cd/static/cd/gulpfile.js
 CDeez/cd/static/cd/package-lock.json
 CDeez/cd/static/cd/package.json
@@ -3751,7 +3749,6 @@ cdeez/cd/__pycache__/utils.cpython-311.pyc
 cdeez/cd/__pycache__/views.cpython-311.pyc
 cdeez/cd/migrations/__pycache__/__init__.cpython-311.pyc
 cdeez/cd/templates/.DS_Store
-<<<<<<< Updated upstream
 .DS_Store
 cdeez/.DS_Store
 cdeez/cd/.DS_Store
@@ -3778,13 +3775,8 @@ cdeez/cd/__pycache__/utils.cpython-311.pyc
 cdeez/cd/__pycache__/views.cpython-311.pyc
 cdeez/cd/migrations/__pycache__/__init__.cpython-311.pyc
 cdeez/cd/templates/.DS_Store
-=======
->>>>>>> Stashed changes
 cdeez/cdeez/__pycache__/__init__.cpython-311.pyc
 cdeez/cdeez/__pycache__/settings.cpython-311.pyc
 cdeez/cdeez/__pycache__/urls.cpython-311.pyc
 cdeez/cdeez/__pycache__/wsgi.cpython-311.pyc
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
