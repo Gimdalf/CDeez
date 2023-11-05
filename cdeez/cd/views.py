@@ -17,8 +17,11 @@ def index(request):
 		username = request.user.get_username()
 		user_data = driver.getUserByID(request.user.id)
 		user_completed = []
-		if user_data['completedCourses'] != None:
-			user_completed = set(i for i in user_data['completedCourses'])
+		if user_data == None:
+			driver.addUser(username)
+			user_data = driver.getUserByID(request.user.id)
+		
+		user_completed = set(i for i in user_data['completedCourses'])
 		majors = []
 		if not 'majors' in user_data:
 			return redirect("cd:select_major")
@@ -89,6 +92,12 @@ def view_course(request, course = None):
 	courseData = driver.getCourseByID(course)
 	return HttpResponse("ID:{}\n {}\n {}".format(courseData["_id"], courseData["title"], courseData["term"]))
 
+def semester(request):
+	template = loader.get_template('cd/semester.html')
+	context = {
+		'courses': [x["_id"] for x in driver.getCoursesWithDiscipline("CSC")]
+	}
+	return HttpResponse(template.render(context, request))
 
 def major_progress(request):
 	if request.user.is_authenticated:
@@ -135,30 +144,36 @@ def login_user(request):
 	}
 	if request.method == 'POST':
 		form = LoginForm(request.POST)
-		if form.is_valid:
+		if form.is_valid():
 			user = authenticate(username = form['username'].data, password = form['password'].data)
 			if user is not None:
 				login(request, user)
-				return redirect('/home') # FIXME:
+				return redirect('cd:index') # FIXME:
 			else:
 				pass
 	return HttpResponse(template.render(context, request))
 
 def select_major(request):
 	template = loader.get_template('cd/select_major.html')
+	allMajors = list(x for x in driver.getAllMajors())
 	context = {
-		'majors': driver.getAllMajors(),
-		'majorForm': MajorForm()
+		'majors': allMajors,
+		'majorForm': MajorForm([(x['_id'], x['name']) for x in allMajors])
 	}
+	pprint(context['majorForm'])
 	if request.method == 'POST':
 		if request.user.is_authenticated:
-			id = request.user.id
-			majors = driver.getAllMajors()
-			major_input = request.POST.get('major')
-			for i in majors:
-				if major_input.lower() == i['_id'].lower():
-					driver.addMajorToUser(id, major_input.upper())
-					return redirect('cd:index')
+			form = MajorForm(choices = [(x['_id'], x['name']) for x in allMajors], data = request.POST)
+			if form.is_valid():
+				id = request.user.id
+				pprint(form)
+				major_input = form.data['major']
+				for i in allMajors:
+					if major_input.lower() == i['_id'].lower():
+						driver.addMajorToUser(id, major_input.upper())
+						return redirect('cd:index')
+			else:
+				pprint(form.errors)
 		else:
 			pass
 	return HttpResponse(template.render(context, request))

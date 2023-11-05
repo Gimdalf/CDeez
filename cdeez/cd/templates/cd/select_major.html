@@ -1,5 +1,14 @@
 <form method="POST", id = "mForm">
-	<select type = 'text' id='major'>{% for major in majors %}<option value = '{{major.name}}'>{{ major.name }}</option>{% endfor %}</select>
-	<input type = "submit" value = "Submit">
-	{% csrf_token %}
+	<fieldset id = "mFormFields">
+		<!-- <select aria-label="label" type = "text" id = "major">{% for major in majors %}<option value = '{{major.name}}'>{{ major.name }}</option>{% endfor %}</select> -->
+		{{ majorForm.major }}
+		<input type = "submit" value = "Submit">
+		{% csrf_token %}
+	</fieldset>
 </form>
+<script type="text/javascript">
+	document.getElementById('mForm').onsubmit = function(){
+		document.getElementById('mFormFields').appendChild(newdiv);
+		document.getElementById('mForm').appendChild(document.getElementById("major"));
+	}
+</script>
