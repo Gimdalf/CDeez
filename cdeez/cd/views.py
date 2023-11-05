@@ -171,7 +171,7 @@ def select_major(request):
 				for i in allMajors:
 					if major_input.lower() == i['_id'].lower():
 						driver.addMajorToUser(id, major_input.upper())
-						return redirect('cd:index')
+						return redirect('cd:major_progress')
 			else:
 				pprint(form.errors)
 		else:
