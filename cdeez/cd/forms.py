@@ -15,6 +15,9 @@ from .utils import Driver
 # 		kwargs['required'] = required
 # 		super(TextField, self).__init__(**kwargs)
 
+# class BooleanField(forms.BooleanField):
+# 	def __init__(self, )
+
 driver = Driver()
 
 class LoginForm(forms.Form):
@@ -34,6 +37,6 @@ class MajorForm(forms.Form):
 
 class CompletionForm(forms.Form):
 	def __init__(self, courses, *args, **kwargs):
-		super(MajorForm, self).__init__(*args, **kwargs)
+		super(CompletionForm, self).__init__(*args, **kwargs)
 		for i in courses:
-			self.fields[i['_id']] = forms.BooleanField()
+			self.fields[i] = forms.BooleanField()

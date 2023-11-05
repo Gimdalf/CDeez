@@ -10,6 +10,7 @@ urlpatterns = [
 	path('select_major', views.select_major, name = 'select_major'),
   	path('major_progress', views.major_progress, name = 'major_progress'),
 	path('semester', views.semester, name = 'semester'),
+	path('major', views.major, name = 'major'),
 ]
 
 app_name = 'cd'
