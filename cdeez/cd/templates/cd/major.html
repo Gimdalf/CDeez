@@ -44,7 +44,7 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Elective courses:</h6>
                 {% csrf_token %}
-                {% for item in major.elective %}
+                {% for item in major.electives %}
                 <div class="my-3"></div>
                     <h5> {{item.name}}</h5>
                     <h6 class="bg-gray-200"> {{item.noOfRequired}} required</h6> <!-- FIXME: if noOfRequired = 1, what does that mean?-->
