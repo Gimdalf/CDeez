@@ -1,0 +1,156 @@
+
+{% extends 'cd/base.html' %}
+
+{% block content %}
+
+
+{% block title %}<h1>Majors</h1>{% endblock %}
+
+<form method="POST">
+	<ul>
+        <li>
+            <div class="container">
+                <div class="round">
+                <input type="checkbox" checked id="checkbox" />
+                <label for="checkbox"> <p class="text-lg mb-0 checkbox-label" >Course here</p> </label>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="container">
+                <div class="round">
+                  <input type="checkbox" checked id="checkbox" />
+                  <label for="checkbox"> <p class="text-lg mb-0 checkbox-label" >Course here</p> </label>
+                </div>
+            </div>
+        </li>
+    
+
+
+</form>
+
+
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Premajor courses</h6>
+    </div>
+    <div class="card-body">
+
+        <script>
+
+            var = {{}}
+
+        </script>
+        <!-- JAVASCRIPT FUNCTION FOR CREATING CHECKBOXES AND COURSE LABELS-->
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                <p class="text-lg mb-0 checkbox-label" >Course here</p>
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                <p class="text-lg mb-0 checkbox-label" >Course here</p>
+            </label>
+          </div>
+
+          
+        <div class="container">
+            <div class="round">
+              <input type="checkbox" checked id="checkbox" />
+              <label for="checkbox"> <div> <p class="text-lg mb-0 checkbox-label" >Course here</p> </div> </label>
+            </div>
+        </div>
+        
+
+        <div class="container">
+            <div class="round">
+              <input type="checkbox" checked id="checkbox" />
+              <label for="checkbox"></label>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Core courses</h6>
+    </div>
+    <div class="card-body">
+        The styling for this basic card example is created by using default Bootstrap
+        utility classes. By using utility classes, the style of the card component can be
+        easily modified with no need for any custom CSS!
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Electives</h6>
+    </div>
+    <div class="card-body">
+        The styling for this basic card example is created by using default Bootstrap
+        utility classes. By using utility classes, the style of the card component can be
+        easily modified with no need for any custom CSS!
+    </div>
+</div>
+
+
+<p class="text-lg mb-0"></p>
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% block major %}{{major.major0.name}}{% endblock %} {% endcomment %}
+
+
+{% comment %} 
+PREMAJOR
+
+
+CORE
+
+ELECTIVE
+
+- dropdown of all available courses in that department
+
+{% endcomment %}
+
+
+
+
+{% comment %} 
+- list of prereq courses
+- list of core courses
+- list of 
+
+- list of uncompleted prereq courses (PRINT LIST with unchecked box)
+- list of completed prereq courses (PRINT LIST with checked box) -> use javascript (post method or sth) to implement a button. OR implement a form.
+- 
+
+
+
+{% endcomment %}

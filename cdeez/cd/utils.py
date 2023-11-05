@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import configparser
 from pprint import pprint
 
+
 # requirements must have: "noOfRequired":int, "courses":
 def checkRequirement(completedCourses, requirement):
 	noRequired = requirement['noOfRequired']
