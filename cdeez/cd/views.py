@@ -17,16 +17,17 @@ def index(request):
 		username = request.user.get_username()
 		user_data = driver.getUserByID(request.user.id)
 		user_completed = set(i for i in user_data['completedCourses'])
-
 		majors = []
-		
+		if not 'majors' in user_data:
+			return redirect("cd:select_major")
 		majorsCompletion = [0, 0]
-		for major in user_data['majors']:
+		for m in user_data['majors']:
+			major = driver.getMajorByID(m)
 			premajorCompletion = requirementProgress(user_completed, major['requirements']['premajor'])
 			coreCompletion = requirementProgress(user_completed, major['requirements']['core'])
 			electiveCompletion = [0, 0]
 			for el in major['requirements']['electives']:
-				asReq = driver.electiveToRequirement(el)
+				asReq = driver.electiveToRequirements(el)
 				reqProg = requirementProgress(user_completed, asReq)
 				electiveCompletion[0] += reqProg[0]
 				electiveCompletion[1] += reqProg[1]
@@ -35,10 +36,10 @@ def index(request):
 			majorsCompletion[1] += totalCompletion[1]
 			major_obj = {
 				'name': major['name'],
-				'majorProgress': decimalToPercentage(totalCompletion[0]/totalCompletion[1]),
-				'premajorProgress': decimalToPercentage(premajorCompletion[0]/premajorCompletion[1]),
-				'coreProgress': decimalToPercentage(coreCompletion[0]/coreCompletion[1]),
-				'electivesProgress': decimalToPercentage(electiveCompletion[0]/electiveCompletion[1])
+				'majorProgress': percentifyValues(totalCompletion),
+				'premajorProgress': percentifyValues(premajorCompletion),
+				'coreProgress': percentifyValues(coreCompletion),
+				'electivesProgress': percentifyValues(electiveCompletion)
 			}
 			majors.append(major_obj)
 		
@@ -49,24 +50,25 @@ def index(request):
 			clusterCompletion = requirementProgress(user_completed, cluster['requirements'])
 			clustersCompletion[0] += clustersCompletion[0]
 			clustersCompletion[1] += clustersCompletion[1]
-			clusterObj['cProgress'] = decimalToPercentage(clusterCompletion[0]/clusterCompletion[1])
+			clusterObj['cProgress'] = percentifyValues(clusterCompletion)
 			clusters['clusters'].append(clusterObj)
-		clusters['clustersProgress'] = decimalToPercentage(clustersCompletion[0]/clustersCompletion[1])
+		clusters['clustersProgress'] = percentifyValues(clustersCompletion)
 
 		writing = {"writing105": "WRTG 105" in user_completed}
 		ulwNoReq = 1 + len(majors)
 		ulwFound = []
 		for course in user_completed:
-			if course['_id'][-1] == "W":
-				ulwFound.append(course['_id'])
+			pprint(course)
+			if course[-1] == "W":
+				ulwFound.append(course)
 			if len(ulwFound) == ulwNoReq:
 				break
 
 		while len(ulwFound) < ulwNoReq:
 			ulwFound.append("")
 		writing['ulw'] = ulwFound
-		writingCompletion = (len(ulwFound) + "WRTG 105" in user_completed, 1 + ulwNoReq)
-		writing['writingProgress'] = decimalToPercentage(writingCompletion[0]/writingCompletion[1])
+		writingCompletion = (len(ulwFound) + ("WRTG 105" in user_completed), 1 + ulwNoReq)
+		writing['writingProgress'] = percentifyValues(writingCompletion)
 
 		completeCompletion = (majorsCompletion[0] + clustersCompletion[0] + writingCompletion[0], (majorsCompletion[1] + clustersCompletion[1] + writingCompletion[1]))
 
@@ -74,7 +76,7 @@ def index(request):
 			'majors': majors,
 			'clusters': clusters,
 			'writing': writing,
-			'progressBar': decimalToPercentage(completeCompletion[0], completeCompletion[1])
+			'progressBar': percentifyValues(completeCompletion)
 		}
 			
 		return HttpResponse(template.render(context, request))
@@ -82,7 +84,7 @@ def index(request):
 		return redirect("cd:login")
 
 def viewCourse(request, course = None):
-	courseData = driver.getCourse(course)
+	courseData = driver.getCourseByID(course)
 	return HttpResponse("ID:{}\n {}\n {}".format(courseData["_id"], courseData["title"], courseData["term"]))
 
 def majorProgress(request):
@@ -108,8 +110,8 @@ def majorProgress(request):
 				electiveList = major_data['requirements']['electives']
 				major_obj['electives'] = []
 				for el in electiveList:
-					eReq = driver.electiveToRequirement(el)
-					major_obj['electives'].append(eReq)
+					eReq = driver.electiveToRequirements(el)
+					major_obj['electives'] += eReq
 				updateRequirementsCompletion(user_completed, major_obj['electives'])
 				majors.append(major_obj)
 
@@ -140,19 +142,18 @@ def login_user(request):
 def select_major(request):
 	template = loader.get_template('cd/select_major.html')
 	context = {
+		'majors': driver.getAllMajors(),
 		'majorForm': MajorForm()
 	}
 	if request.method == 'POST':
 		if request.user.is_authenticated:
 			id = request.user.id
-			form = MajorForm(request.POST)
-			if form.is_valid:
-				majors = driver.getAllMajors()
-				major_input = form['major'].data
-				for i in majors:
-					if major_input.lower() == i['_id'].lower():
-						driver.addMajorToUser(id, major_input.upper())
-						return redirect('cd:index')
+			majors = driver.getAllMajors()
+			major_input = request.POST.get('major')
+			for i in majors:
+				if major_input.lower() == i['_id'].lower():
+					driver.addMajorToUser(id, major_input.upper())
+					return redirect('cd:index')
 		else:
 			pass
 	return HttpResponse(template.render(context, request))
@@ -176,6 +177,7 @@ def create_user(request):
 			else:
 				pass
 	return HttpResponse(template.render(context, request))
+
 
 def logout_user(request):
 	logout(request)
