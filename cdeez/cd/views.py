@@ -83,12 +83,13 @@ def index(request):
 	else:
 		return redirect("cd:login")
 
-def viewCourse(request, course = None):
+def view_course(request, course = None):
 	courseData = driver.getCourseByID(course)
 	return HttpResponse("ID:{}\n {}\n {}".format(courseData["_id"], courseData["title"], courseData["term"]))
 
-def majorProgress(request):
+def major_progress(request):
 	if request.user.is_authenticated:
+		template = loader.get_template('cd/major_progress.html')
 		username = request.user.get_username()
 		user_data = driver.getUserByID(request.user.id)
 		user_completed = set(i for i in user_data['completedCourses'])
@@ -119,6 +120,7 @@ def majorProgress(request):
 			'username': username,
 			'majors': majors
 		}
+		return HttpResponse(template.render(context, request))
 	else:
 		return redirect("cd:login")
 

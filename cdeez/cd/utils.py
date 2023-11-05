@@ -16,8 +16,8 @@ def checkRequirement(completedCourses, requirement):
 	return []
 
 def updateRequirementsCompletion(completedCourses, requirements):
-	for i, data in zip(range(len(requirements), requirements)):
-		completingCourses = checkRequirement(completedCourses, data['courses'])
+	for i, data in zip(range(len(requirements)), requirements):
+		completingCourses = checkRequirement(completedCourses, data)
 		requirements[i]['completed'] = completingCourses
 
 # currenty just getting progress for first major
@@ -161,16 +161,16 @@ class Driver:
 			#If there are no specified disciplines
 			if el['fromDisciplines'] == None or el['fromDisciplines'] == []:
 				allCourses = self.getAllCourses()
-				elective_obj['courses'] = [allCourses for i in noOfCourses]
+				elective_obj['courses'] = [list(j for j in allCourses) for i in noOfCourses]
 			#If disciplines are specified
 			else:
 				disciplineCourses = []
 				twoHundredCourses = []
 				noTwoHundredCourses = el['aboveTwoHundred']
 				for d in el['fromDisciplines']:
-					disciplineCourses.append(self.getCoursesWithDiscipline(d))
+					disciplineCourses.append(i for i in self.getCoursesWithDiscipline(d))
 					if noTwoHundredCourses > 0:
-						twoHundredCourses += [self.getCoursesWithDiscipline(d, True) for d in el['fromDisciplines']]
+						twoHundredCourses += [i for i in self.getCoursesWithDiscipline(d, True) for d in el['fromDisciplines']]
 				if noTwoHundredCourses > 0:
 					otherElectiveObj = elective_obj.copy()
 					otherElectiveObj['courses'] = twoHundredCourses
@@ -183,5 +183,5 @@ class Driver:
 		else:
 			elective_obj['courses'] = [el['courseList'] * noOfCourses]
 		newReqCollection.append(elective_obj)
-		
+
 		return newReqCollection
