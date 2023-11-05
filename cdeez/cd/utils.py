@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 import configparser
+from pprint import pprint
 
 class Driver:
 	def __init__(self):
@@ -10,6 +11,7 @@ class Driver:
 		self.mongoDB = self.client[server_settings['db_name']]
 		self.coursesDB = self.mongoDB.Courses
 		self.majorsDB = self.mongoDB.Majors
+		self.usersDB = self.mongoDB.Users
 		self.requirementsDB = self.mongoDB.Requirements
 
 	def addCourse(self, id, subid, name, terms, prereqs, subject, credits):
@@ -43,10 +45,46 @@ class Driver:
 	def getMajorByID(self, id):
 		major = self.majorsDB.find_one({"_id":id})
 		return major
+	
+	def getAllMajors(self):
+		return self.majorsDB.find()
 
 	def newRequirement(self, courses, minCompletion):
-		post = {
+		requirement = {
 			"courses": courses,
 			"minCompletion": minCompletion
 		}
-		return post
+		return requirement
+	
+	def createElective(self, courses, noCourses, fromDisciplines, aboveTwoHundred):
+		elective = {
+			"courses": courses,
+			"noCourses": noCourses,
+			"fromDisciplines": fromDisciplines,
+			"aboveTwoHundred": aboveTwoHundred
+		}
+		return elective
+
+	def addUser(self, id, username):
+		post = {
+			"_id": id,
+			"name": username,
+			"majors": [],
+			"minors": [],
+			"clusters": []
+		}
+		return self.usersDB.insert_one(post).inserted_id
+
+	def getUserByID(self, id):
+		return self.usersDB.find_one({"_id":id})
+
+	def addMajorToUser(self, id, major):
+		pprint("Mjor to add:" + major)
+		user = self.usersDB.find_one({'_id': id})
+		oldMajors = []
+		print("OLD MAJORS: {}".format(user['majors']))
+		if user['majors'] != None:
+			print("UPDATING")
+			oldMajors = user['majors']
+		oldMajors.append(major)
+		return self.usersDB.update_one({'_id': id}, {'$set':{'majors':oldMajors}})

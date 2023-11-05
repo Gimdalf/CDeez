@@ -1,0 +1,10 @@
+{% extends 'cd/base.html' %}
+
+{% block content%}
+<form method="POST">
+	{{ loginForm }}
+	<input type = "submit" value = "Submit">
+	{% csrf_token %}
+</form>
+{% endblock %}
+
