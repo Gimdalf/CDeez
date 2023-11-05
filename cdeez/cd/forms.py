@@ -1,8 +1,6 @@
 from django import forms
 from .utils import Driver
 
-
-
 # class CharField(forms.CharField):
 # 	def __init__(self, widget = forms.TextInput(), required = False, **kwargs):
 # 		kwargs['widget'] = widget
@@ -14,6 +12,12 @@ from .utils import Driver
 # 		kwargs['widget'] = widget
 # 		kwargs['required'] = required
 # 		super(TextField, self).__init__(**kwargs)
+
+class BooleanField(forms.BooleanField):
+	def __init__(self, widget = forms.CheckboxInput(attrs = {"class":"test","onclick": "post()"}), required = False, **kwargs):
+		kwargs['widget'] = widget
+		kwargs['required'] = required
+		super(BooleanField, self).__init__(**kwargs)
 
 driver = Driver()
 
@@ -34,6 +38,6 @@ class MajorForm(forms.Form):
 
 class CompletionForm(forms.Form):
 	def __init__(self, courses, *args, **kwargs):
-		super(MajorForm, self).__init__(*args, **kwargs)
+		super(CompletionForm, self).__init__(*args, **kwargs)
 		for i in courses:
-			self.fields[i['_id']] = forms.BooleanField()
+			self.fields[i] = BooleanField()
