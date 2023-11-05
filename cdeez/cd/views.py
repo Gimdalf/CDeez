@@ -41,8 +41,43 @@ def viewCourse(request, course = None):
 	courseData = driver.getCourse(course)
 	return HttpResponse("ID:{}\n {}\n {}".format(courseData["_id"], courseData["title"], courseData["term"]))
 
-def majorProgress(request):
-	pass
+
+def major_progress(request):
+	if request.user.is_authenticated:
+		template = loader.get_template('cd/major.html')
+		username = request.user.get_username()
+		user_data = driver.getUserByID(request.user.id)
+		user_completed = set(i for i in user_data['completedCourses'])
+
+		majors = []
+		majors_from_db = user_data['majors']
+		for major in majors_from_db:
+			major_obj = {}
+			major_data = driver.getMajorByID(major)
+			if major_data == None:
+				continue
+			else:
+				major_obj['name'] = major_data['name']
+				# Getting premajor requirements
+				major_obj['premajor'] = major_data['requirements']['premajor']
+				major_obj['core'] = major_data['requirements']['core']
+				updateRequirementsCompletion(user_completed, major_obj['premajor'])
+				updateRequirementsCompletion(user_completed, major_obj['core'])
+				electiveList = major_data['requirements']['electives']
+				major_obj['electives'] = []
+				for el in electiveList:
+					eReq = driver.electiveToRequirements(el)
+					major_obj['electives'] += eReq
+				updateRequirementsCompletion(user_completed, major_obj['electives'])
+				majors.append(major_obj)
+
+		context = {
+			'username': username,
+			'majors': majors
+		}
+		return HttpResponse(template.render(context, request))
+	else:
+		return redirect("cd:login")
 
 def login_user(request):
 	template = loader.get_template('cd/login.html')

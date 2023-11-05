@@ -3751,6 +3751,7 @@ cdeez/cd/__pycache__/utils.cpython-311.pyc
 cdeez/cd/__pycache__/views.cpython-311.pyc
 cdeez/cd/migrations/__pycache__/__init__.cpython-311.pyc
 cdeez/cd/templates/.DS_Store
+<<<<<<< Updated upstream
 .DS_Store
 cdeez/.DS_Store
 cdeez/cd/.DS_Store
@@ -3777,8 +3778,13 @@ cdeez/cd/__pycache__/utils.cpython-311.pyc
 cdeez/cd/__pycache__/views.cpython-311.pyc
 cdeez/cd/migrations/__pycache__/__init__.cpython-311.pyc
 cdeez/cd/templates/.DS_Store
+=======
+>>>>>>> Stashed changes
 cdeez/cdeez/__pycache__/__init__.cpython-311.pyc
 cdeez/cdeez/__pycache__/settings.cpython-311.pyc
 cdeez/cdeez/__pycache__/urls.cpython-311.pyc
 cdeez/cdeez/__pycache__/wsgi.cpython-311.pyc
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
