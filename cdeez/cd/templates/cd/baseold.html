@@ -1,0 +1,53 @@
+
+
+<html lang="en">
+ <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="static/cd/style.css">
+
+    <title>
+        {% block title %} CDz {% endblock %}
+    </title>
+</head>
+<body>
+    <header>
+
+        {% block logo %}
+        <img class="logo"> <!-- TODO: src = "link to logo" -->
+        {% endblock %}
+
+        {% block navbar %}
+        <nav>
+            <ul class="nav__links">
+                <li><a href="/majors">Majors</a></li>
+                <li><a href="#">Clusters</a></li>
+                <li><a href="#">Writing Requirements</a></li>
+            </ul>
+        </nav>
+        {% endblock %}
+        
+        {% comment %} <a class="cta" href="#"><button>Search courses</a> {% endcomment %}
+    </header>
+    <!-- TODO: alternative sidebar. -->
+    {% comment %} {% block sidebar %}
+    <div class="w3-sidebar w3-bar-block" style="width:25%">
+        <a href="#" class="w3-bar-item w3-button">Majors</a>
+        <a href="#" class="w3-bar-item w3-button">Clusters</a>
+        <a href="#" class="w3-bar-item w3-button">Writing Requirements</a>
+        </div>
+                
+    {% endblock %} {% endcomment %}
+
+
+    <div style="margin-left:25%">
+        {% block content %}
+            List of Majors
+        {% endblock %}     
+        </div>
+
+</body>
+</html>
+
+
