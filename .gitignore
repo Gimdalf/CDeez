@@ -3736,3 +3736,8 @@ static/cd/vendor/jquery/jquery.slim.min.map
 static/cd/vendor/jquery-easing/jquery.easing.compatibility.js
 static/cd/vendor/jquery-easing/jquery.easing.js
 static/cd/vendor/jquery-easing/jquery.easing.min.js
+*.pyc
+cdeez/cd/templates/.DS_Store
+cdeez/cd/.DS_Store
+cdeez/.DS_Store
+.DS_Store
