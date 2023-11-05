@@ -50,7 +50,8 @@ class Driver:
 		self.coursesDB = self.mongoDB.Courses
 		self.majorsDB = self.mongoDB.Majors
 		self.usersDB = self.mongoDB.Users
-		self.semesterDB = self.mongoDB.Semester
+		self.clustersDB = self.mongoDB.Clusters
+		# self.semesterDB = self.mongoDB.Semester
 
 
 	def addCourse(self, id, subid, name, terms, prereqs, subject, credits):
@@ -65,9 +66,22 @@ class Driver:
 		}
 		return self.coursesDB.insert_one(post).inserted_id
 	
+	def addCourses(self, courses):
+		return self.coursesDB.insert_many(courses)
+
 	def getCourseByID(self, id):
 		course = self.coursesDB.find_one({"_id":id})
 		return course
+	
+	def getAllCourses(self):
+		return self.coursesDB.find()
+
+	def getCoursesWithDiscipline(self, discipline, twoHundred = False):
+		if twoHundred:
+			courses = self.coursesDB.find({'_id':{"$regex": "[A-z]{3,4} 2\d\d"}, 'discipline':discipline})
+		else:
+			courses = self.coursesDB.find({'discipline': discipline})
+		return courses
 	
 	def getAllULWCourses(self):
 		return self.courseDB.find("")
@@ -129,16 +143,6 @@ class Driver:
 		oldMajors.append(major)
 		return self.usersDB.update_one({'_id': id}, {'$set':{'majors':oldMajors}})
 	
-	def getAllCourses(self):
-		return self.coursesDB.find()
-
-	def getCoursesWithDiscipline(self, discipline, twoHundred = False):
-		if twoHundred:
-			courses = self.coursesDB.find({'_id':{"$regex": "[A-z]{3,4} 2\d\d"}, 'discipline':discipline})
-		else:
-			courses = self.coursesDB.find({'discipline': discipline})
-		return courses
-	
 	def completeCourse(self, id, course):
 		user = self.usersDB.find_one({'_id': id})
 		oldCompleted = []
@@ -150,7 +154,6 @@ class Driver:
 	def uncompleteCourse(self, id, course):
 		user = self.usersDB.find_one({'_id': id})
 		return self.usersDB.update_one({'_id': id}, {'$pull':{'completedCourses':course}})
-	
 	
 	def electiveToRequirements(self, el):
 		newReqCollection = []
@@ -185,3 +188,17 @@ class Driver:
 		newReqCollection.append(elective_obj)
 
 		return newReqCollection
+	
+	def createCluster(self, name, discipline, requirements):
+		post = {
+			"_id": name,
+			"discipline": discipline,
+			"requirements": requirements
+		}
+		return self.clustersDB.insert(post)
+	
+	def getClusterByName(self, name):
+		return self.clustersDB.find_one({"_id": name})
+	
+	def getAllClusters(self):
+		return self.clustersDB.find()
