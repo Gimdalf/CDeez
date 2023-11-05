@@ -81,7 +81,8 @@ def index(request):
 			'majors': majors,
 			'clusters': clusters,
 			'writing': writing,
-			'progressBar': percentifyValues(completeCompletion)
+			'progressBar': percentifyValues(completeCompletion),
+			'majorsCompletion': percentifyValues(majorsCompletion)
 		}
 			
 		return HttpResponse(template.render(context, request))

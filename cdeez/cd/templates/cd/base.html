@@ -68,22 +68,22 @@
             <!-- REPLACED WITH: Just a header-->
             <li class="nav-item">
 
-            <a class="nav-link collapsed" href="/major_progress">
-                <i class="fas fa-fw fa-cog"></i>
+            <a class="nav-link collapsed" href="/major">
+                <i class="fas fa-fw fa-folder"></i>
                 <span>Majors</span>
             </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/clusters">
-                    <i class="fas fa-fw fa-wrench"></i>
+                <a class="nav-link collapsed" href="#">
+                    <i class="fas fa-fw fa-folder"></i>
                     <span>Clusters</span>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/writing">
-                    <i class="fas fa-fw fa-wrench"></i>
+                <a class="nav-link collapsed" href="#">
+                    <i class="fas fa-fw fa-folder"></i>
                     <span>Writing</span>
                 </a>
             </li>
@@ -142,12 +142,6 @@
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
 
-            <!-- Sidebar Message -->
-            <div class="sidebar-card d-none d-lg-flex">
-                <img class="sidebar-card-illustration mb-2" src="static/cd/static/cd/img/undraw_rocket.svg" alt="...">
-                <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and more!</p>
-                <a class="btn btn-success btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro">Upgrade to Pro!</a>
-            </div>
 
         </ul>
         <!-- End of Sidebar -->
@@ -364,12 +358,12 @@
                                             </div>
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{majors.majorProgress}}%</div>
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{majorsCompletion}}%</div>
                                                 </div>
                                                 <div class="col">
                                                     <div class="progress progress-sm mr-2">
                                                         <div class="progress-bar bg-warning" role="progressbar"
-                                                            style="width: {{majors.majorProgress}}%" aria-valuenow={{majors.majorProgress}} aria-valuemin="0"
+                                                            style="width: {{majorsCompletion}}%" aria-valuenow={{majorsCompletion}} aria-valuemin="0"
                                                             aria-valuemax="100"></div>
                                                     </div>
                                                 </div>
@@ -480,13 +474,6 @@
                                         <div class="progress-bar bg-primary" role="progressbar" style="width: {{major.electivesProgress}}%"
                                             aria-valuenow="{{major.electivesProgress}}" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
-
-                                    <h4 class="small font-weight-bold">Testing <span
-                                            class="float-right">80%</span></h4>
-                                            <div class="progress mb-4">
-                                                <div class="progress-bar bg-primary" role="progressbar" style="width: 80%"
-                                                    aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
                                             
         
                                     <!--
