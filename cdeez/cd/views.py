@@ -90,7 +90,7 @@ def view_course(request, course = None):
 
 def major_progress(request):
 	if request.user.is_authenticated:
-		template = loader.get_template('cd/major_progress.html')
+		template = loader.get_template('cd/major.html')
 		username = request.user.get_username()
 		user_data = driver.getUserByID(request.user.id)
 		user_completed = set(i for i in user_data['completedCourses'])
@@ -188,7 +188,22 @@ def logout_user(request):
 
 
 def major(request):
-	context = {}
+	context = {
+		'majors':[
+			{'name':'Computer Science',
+			'premajor':[
+				{'name':'Math',
+				'completed':['MATH150'],
+				'noOfRequired':2,
+				'courses':['MATH150', 'MATH161']}, 
+				{'name':'CS','completed':['CSC171'],
+	 			'noOfRequired':3,
+				'courses':['CSC171','CSC172','CSC173']}
+			]
+			},
+			{'name':'Data Science'}
+		]
+	}
 	template = loader.get_template('cd/major.html')
 	return HttpResponse(template.render(context, request))
 

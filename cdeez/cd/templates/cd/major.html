@@ -6,44 +6,89 @@
 
 {% block title %}<h1>Majors</h1>{% endblock %}
 
-<form method="POST">
-	<ul>
-        <li>
-            <div class="container">
-                <div class="round">
-                <input type="checkbox" checked id="checkbox" />
-                <label for="checkbox"> <p class="text-lg mb-0 checkbox-label" >Course here</p> </label>
-                </div>
-            </div>
-        </li>
-        <li>
-            <div class="container">
-                <div class="round">
-                  <input type="checkbox" checked id="checkbox" />
-                  <label for="checkbox"> <p class="text-lg mb-0 checkbox-label" >Course here</p> </label>
-                </div>
-            </div>
-        </li>
-    
 
+{% for major in majors %}
+                
+{% for item in major.premajor %}
+    {{item.name}}
+    {% for course in item.courses%}
+        {{course}}
+    {% endfor %}
+{% endfor %}
 
-</form>
-
+{% endfor %}
 
 
 
 <div class="card shadow mb-4">
     <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Premajor courses</h6>
+        
+        <h6 class="m-0 font-weight-bold text-primary">Premajor courses:
+            
+        </h6>
+
+        <form method="post">
+
+            {% for major in majors %}
+                
+                {% for item in major.premajor %}
+                    {{item.name}}
+                    {% for completed in item.completed%}
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                            <label class="form-check-label" for="flexCheckChecked">
+                                <p class="text-lg mb-0 checkbox-label" >{{completed}}</p>
+                            </label>
+                        </div> 
+            
+                    {% endfor %}
+                {% endfor %}
+
+            {% endfor %}
+
+            <script>
+
+                var majors = {{majors}}
+
+                for(let i=0; i<majors.length; i++){
+                    var newdiv = document.createElement('div');
+                    newdiv.class = "form-check"
+                    newdiv.innerHTML = 
+                    majors[i]['name'];
+                }
+
+            </script>
+            {% for course in item.courses %}
+            {% for completed in item.completed%}
+                
+                {% if course == completed %}
+                    
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+
+
+
+            {% for item in majors.premajor.completed %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    <p class="text-lg mb-0 checkbox-label" >Hello</p>
+                </label>
+            </div>
+        
+            {% endfor %}
+        
+            
+
+
+        </form>
+            
     </div>
     <div class="card-body">
 
-        <script>
-
-            var = {{}}
-
-        </script>
-        <!-- JAVASCRIPT FUNCTION FOR CREATING CHECKBOXES AND COURSE LABELS-->
+        <!-- CHECKED CHECKBOX: for completed -->
 
         <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
@@ -52,12 +97,14 @@
             </label>
           </div>
 
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault">
-                <p class="text-lg mb-0 checkbox-label" >Course here</p>
-            </label>
-          </div>
+        <!-- CHECKED CHECKBOX: for uncompleted -->
+
+        <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+        <label class="form-check-label" for="flexCheckDefault">
+            <p class="text-lg mb-0 checkbox-label" >Course here</p>
+        </label>
+        </div>
 
           
         <div class="container">
